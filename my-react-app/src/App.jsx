@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Form, Button, ListGroup, Pagination } from 'react-bootstrap';
-import { BsPencil, BsTrash } from 'react-icons/bs'; // Import icons
+import { Container, Row, Col, Form, Button, ListGroup, Modal } from 'react-bootstrap';
+import { BsPencil, BsTrash, BsPlus } from 'react-icons/bs'; // Import icons
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
@@ -8,10 +8,11 @@ function App() {
   const [formData, setFormData] = useState({ title: '', content: '', department: '' });
   const [editingStoryId, setEditingStoryId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [storiesPerPage] = useState(5);
+  const [storiesPerPage] = useState(9); // Show 9 stories per page (3x3)
   const [searchTerm, setSearchTerm] = useState('');
   const [departmentFilter, setDepartmentFilter] = useState('');
   const [sortOrder, setSortOrder] = useState('asc'); // Sorting order
+  const [showAddModal, setShowAddModal] = useState(false); // Modal state for Add/Edit form
 
   useEffect(() => {
     fetch('http://localhost:8080/api/stories')
@@ -38,6 +39,7 @@ function App() {
           setStories(stories.map(story => (story.id === updatedStory.id ? updatedStory : story)));
           setFormData({ title: '', content: '', department: '' });
           setEditingStoryId(null);
+          setShowAddModal(false); // Close modal after submission
         })
         .catch(error => console.error('Error updating story:', error));
     } else {
@@ -51,6 +53,7 @@ function App() {
         .then(newStory => {
           setStories([...stories, newStory]);
           setFormData({ title: '', content: '', department: '' });
+          setShowAddModal(false); // Close modal after submission
         })
         .catch(error => console.error('Error adding story:', error));
     }
@@ -59,6 +62,7 @@ function App() {
   const handleEdit = (story) => {
     setFormData({ title: story.title, content: story.content, department: story.department });
     setEditingStoryId(story.id);
+    setShowAddModal(true); // Open the modal in edit mode
   };
 
   const handleDelete = (id) => {
@@ -95,14 +99,17 @@ function App() {
   const currentStories = filteredStories.slice(indexOfFirstStory, indexOfLastStory);
 
   // Total Pages
-  const totalPages = Math.ceil(filteredStories.length / storiesPerPage);
+  const totalPages = Math.max(1, Math.ceil(filteredStories.length / storiesPerPage));
+
+  const isFirstPage = currentPage === 1;
+  const isLastPage = currentPage === totalPages;
 
   return (
     <Container className="d-flex flex-column align-items-center mt-4">
       <Row className="justify-content-center w-100">
         <Col md={8}>
           <h1 className="text-center mb-4">VIA Tabloid Stories</h1>
-          
+
           {/* Search and Filter */}
           <Form className="mb-4">
             <Row>
@@ -140,6 +147,18 @@ function App() {
             </Row>
           </Form>
 
+          {/* Add New Story Button */}
+          <Button variant="success" className="mb-4" onClick={() => setShowAddModal(true)}>
+            <BsPlus /> Add New Story
+          </Button>
+
+          {/* No Stories Available Message */}
+          {filteredStories.length === 0 && (
+            <div className="text-center mb-4">
+              <h5>No stories available. Add a new story to get started!</h5>
+            </div>
+          )}
+
           {/* Story List */}
           <ListGroup className="mb-4">
             {currentStories.map(story => (
@@ -159,28 +178,35 @@ function App() {
             ))}
           </ListGroup>
 
-          {/* Pagination Controls */}
-          <Pagination className="justify-content-center">
-            <Pagination.Prev
+          {/* Updated Pagination Controls */}
+          <div className="d-flex justify-content-between align-items-center mt-3 mb-4">
+            <Button
+              variant="secondary"
               onClick={() => handlePaginationChange(currentPage - 1)}
-              disabled={currentPage === 1}
-            />
-            {[...Array(totalPages)].map((_, index) => (
-              <Pagination.Item
-                key={index + 1}
-                active={index + 1 === currentPage}
-                onClick={() => handlePaginationChange(index + 1)}
-              >
-                {index + 1}
-              </Pagination.Item>
-            ))}
-            <Pagination.Next
-              onClick={() => handlePaginationChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-            />
-          </Pagination>
+              disabled={isFirstPage}
+            >
+              <i className="fas fa-arrow-left"></i> Previous
+            </Button>
 
-          {/* Add/Edit Form */}
+            <span>Page {currentPage} of {totalPages}</span>
+
+            <Button
+              variant="secondary"
+              onClick={() => handlePaginationChange(currentPage + 1)}
+              disabled={isLastPage}
+            >
+              Next <i className="fas fa-arrow-right"></i>
+            </Button>
+          </div>
+        </Col>
+      </Row>
+
+      {/* Add/Edit Story Modal */}
+      <Modal show={showAddModal} onHide={() => setShowAddModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>{editingStoryId ? 'Edit Story' : 'Add Story'}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3" controlId="formTitle">
               <Form.Label>Title</Form.Label>
@@ -218,8 +244,8 @@ function App() {
               </Button>
             </div>
           </Form>
-        </Col>
-      </Row>
+        </Modal.Body>
+      </Modal>
     </Container>
   );
 }
