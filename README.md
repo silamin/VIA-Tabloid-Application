@@ -16,3 +16,8 @@ First, pull and run the PostgreSQL container manually:
 ```bash
 docker run --name springboot_postgres -e POSTGRES_PASSWORD=mysecretpassword -d postgres
 ```
+This command:
+
+- Pulls the official PostgreSQL image (if not already pulled).
+- Creates a container named springboot_postgres.
+- Sets the PostgreSQL password to mysecretpassword.
