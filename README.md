@@ -2,7 +2,7 @@
 
 The VIA Tabloid Application is a web application that displays sensational stories from different departments in VIA. This project is built following DevOps practices and consists of three main components:
 - **Backend**: Spring Boot REST API
-- **Frontend**: React (with TypeScript)
+- **Frontend**: React (jsx)
 - **Database**: PostgreSQL
 
 ## Prerequisites
