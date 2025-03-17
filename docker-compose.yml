@@ -6,7 +6,8 @@ services:
     container_name: viatab_postgres
     restart: always
     environment:
-      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_USER: viatab_user       # Set your desired username
+      POSTGRES_PASSWORD: mysecretpassword   # Set your desired password
     volumes:
       - postgres-data:/var/lib/postgresql/data  
 
@@ -18,9 +19,11 @@ services:
       - db
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://viatab_postgres:5432/postgres
+      SPRING_DATASOURCE_USERNAME: viatab_user
+      SPRING_DATASOURCE_PASSWORD: mysecretpassword
     ports:
-      - "8080:8080"  # Ensure the backend service exposes port 8080 to the host
-
+      - "8080:8080"
+ 
   frontend:
     build:
       context: ./my-react-app
@@ -29,4 +32,4 @@ services:
       - "3000:80"
 
 volumes:
-  postgres-data:  
+  postgres-data:
