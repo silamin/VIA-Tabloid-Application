@@ -21,3 +21,15 @@ This command:
 - Pulls the official PostgreSQL image (if not already pulled).
 - Creates a container named springboot_postgres.
 - Sets the PostgreSQL password to mysecretpassword.
+
+### 2. Run the Application Stack with Docker Compose
+Make sure you are in the root directory of your project (where your docker-compose.yml file is located). Then run:
+```bash
+docker-compose up -d --build
+```
+
+This command will:
+
+- Build the Docker images for your Spring Boot backend and React frontend.
+- Start up the containers defined in your docker-compose.yml file.
+- Orchestrate the entire stack, ensuring the backend, frontend, and database work together.
