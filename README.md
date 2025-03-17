@@ -33,3 +33,28 @@ This command will:
 - Build the Docker images for your Spring Boot backend and React frontend.
 - Start up the containers defined in your docker-compose.yml file.
 - Orchestrate the entire stack, ensuring the backend, frontend, and database work together.
+
+  ### 2. Enjoy the Application
+  Once the containers are running, open your browser and navigate to:
+
+```bash
+http://localhost:3000
+```
+
+This is where your React frontend is served. From here, you can interact with the application, which communicates with the Spring Boot REST API and PostgreSQL database.
+  ### 3. Shutting Down the Application
+  When you're done, you can stop and remove the running containers by running:
+
+```bash
+docker-compose down
+```
+This command will stop the containers and clean up the resources created by Docker Compose.
+
+## Additional Notes
+
+- This setup is intended for development and testing purposes. For production, consider using environment variables, persistent storage for your database, and secure configurations for sensitive data.
+- The application demonstrates how a Spring Boot REST API, React frontend, and PostgreSQL database can be orchestrated using Docker and Docker Compose.
+- 
+Enjoy using the VIA Tabloid Application!
+
+
