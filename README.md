@@ -15,3 +15,4 @@ The VIA Tabloid Application is a web application that displays sensational stori
 First, pull and run the PostgreSQL container manually:
 ```bash
 docker run --name springboot_postgres -e POSTGRES_PASSWORD=mysecretpassword -d postgres
+```
