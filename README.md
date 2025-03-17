@@ -7,7 +7,6 @@ The VIA Tabloid Application is a web application that displays sensational stori
 
 ## Prerequisites
 - [Docker](https://www.docker.com/) installed and running on your machine.
-- [Docker Compose](https://docs.docker.com/compose/) installed.
 
 ## Getting Started
 
