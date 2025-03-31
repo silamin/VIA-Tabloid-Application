@@ -8,7 +8,7 @@ The VIA Tabloid Application is a web application that displays sensational stori
 ## Prerequisites
 - [Docker](https://www.docker.com/) installed and running on your machine.
 
-## Getting Started
+## Getting Started (Part 1 + 2)
 
 ### 1. Pull and Run PostgreSQL Container
 First, pull and run the PostgreSQL container manually:
@@ -49,11 +49,64 @@ docker-compose down
 ```
 This command will stop the containers and clean up the resources created by Docker Compose.
 
-## Additional Notes
+## Deploying to Kubernetes (Part 3)
+After successfully running the application with Docker Compose, we deployed the entire stack on Kubernetes using Minikube. The following steps summarize the process:
+Build and Push Docker Images
 
-- This setup is intended for development and testing purposes. For production, consider using environment variables, persistent storage for your database, and secure configurations for sensitive data.
-- The application demonstrates how a Spring Boot REST API, React frontend, and PostgreSQL database can be orchestrated using Docker and Docker Compose.
+### 1. Build and Push Docker Images
+We built the backend and frontend images using:
 
-Enjoy using the VIA Tabloid Application!
+```bash
+docker build -t via-tabloid-application-backend:latest ./backendV1
+docker build -t via-tabloid-application-frontend:latest ./my-react-app
+```
+
+Then we pushed these images to Docker Hub:
+
+```bash
+docker push via-tabloid-application-backend:latest
+docker push via-tabloid-application-frontend:latest
+```
+
+### 2. Deploy to Kubernetes
+With Minikube running:
+
+```bash
+minikube start
+```
+
+We applied our manifests:
+
+```bash
+kubectl apply -f path/to/your/deployment.yaml
+kubectl apply -f path/to/your/service.yaml
+```
+
+Then we verified that the pods and services were running:
 
 
+```bash
+kubectl get pods
+kubectl get services
+```
+### 3. Accessing the Application
+Since the backend and frontend services are exposed as NodePort, we used:
+```bash
+minikube service viatab-frontend
+minikube service viatab-backend
+```
+
+to open the services in the default web browser.
+
+**Why Kubernetes?**
+Kubernetes was chosen for its ability to efficiently manage, scale, and deploy containerized applications across multiple nodes—ideal for production-grade deployments.
+
+### 4. View the Kubernetes Dashboard
+To launch the Minikube dashboard for monitoring:
+
+
+```bash
+minikube dashboard
+```
+
+This project is for educational purposes and follows DevOps best practices.
