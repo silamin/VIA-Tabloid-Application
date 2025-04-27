@@ -23,10 +23,15 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
 
-      - name: Build & test backend
+      - name: Build & package backend
         working-directory: ./backendV1
         run: |
-          mvn clean install -DskipTests -DskipDocker
+          # Use Maven Wrapper if available, otherwise Maven CLI
+          if [ -f mvnw ]; then
+            ./mvnw clean package -DskipTests
+          else
+            mvn clean package -DskipTests
+          fi
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -36,7 +41,7 @@ jobs:
       - name: Build frontend
         working-directory: ./my-react-app
         run: |
-          npm install
+          npm ci
           npm run build
 
   # Continuous Deployment (CD)
@@ -66,16 +71,12 @@ jobs:
 
       - name: Build Docker images in Minikube
         run: |
-          # Tag and build backend image matching deployment manifest
           docker build -t silamin00/via-tabloid-application-backend:latest ./backendV1
-          # Tag and build frontend image matching deployment manifest
           docker build -t silamin00/via-tabloid-application-frontend:latest ./my-react-app
 
       - name: Deploy to Kubernetes
         run: |
-          # Apply PersistentVolumeClaim and all Deployments
           kubectl apply -f k8s/deployment.yaml
-          # Apply Services
           kubectl apply -f k8s/service.yaml
 
       - name: Verify rollout
