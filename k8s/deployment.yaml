@@ -1,0 +1,96 @@
+# Persistent Volume Claim for PostgreSQL data
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+# Deployment for PostgreSQL database
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: viatab-postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: viatab-postgres
+  template:
+    metadata:
+      labels:
+        app: viatab-postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:13
+          env:
+            - name: POSTGRES_USER
+              value: "viatab_user"
+            - name: POSTGRES_PASSWORD
+              value: "mysecretpassword"
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: postgres-pvc
+---
+# Deployment for the Spring Boot backend
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: viatab-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: viatab-backend
+  template:
+    metadata:
+      labels:
+        app: viatab-backend
+    spec:
+      containers:
+        - name: backend
+          # Replace with your backend image name as built (or push it to a registry)
+          image: silamin00/via-tabloid-application-backend:latest
+
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://viatab-postgres:5432/postgres"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "viatab_user"
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "mysecretpassword"
+---
+# Deployment for the React (Vite) frontend
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: viatab-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: viatab-frontend
+  template:
+    metadata:
+      labels:
+        app: viatab-frontend
+    spec:
+      containers:
+        - name: frontend
+          # Replace with your frontend image name as built
+          image: silamin00/via-tabloid-application-frontend:latest
+          ports:
+            - containerPort: 80

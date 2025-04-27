@@ -1,0 +1,39 @@
+---
+# Service for PostgreSQL (internal use)
+apiVersion: v1
+kind: Service
+metadata:
+  name: viatab-postgres
+spec:
+  selector:
+    app: viatab-postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+  type: ClusterIP
+---
+# Service for the Spring Boot backend
+apiVersion: v1
+kind: Service
+metadata:
+  name: viatab-backend
+spec:
+  selector:
+    app: viatab-backend
+  ports:
+    - port: 8080
+      targetPort: 8080
+  type: NodePort
+---
+# Service for the React (Vite) frontend
+apiVersion: v1
+kind: Service
+metadata:
+  name: viatab-frontend
+spec:
+  selector:
+    app: viatab-frontend
+  ports:
+    - port: 3000
+      targetPort: 80
+  type: NodePort
