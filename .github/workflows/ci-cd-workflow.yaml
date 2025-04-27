@@ -59,18 +59,17 @@ jobs:
         with:
           version: 'latest'
 
-            - name: Set up Minikube
-        uses: manusa/actions-setup-minikube@v2.13.1
+      - name: Set up Minikube
+        uses: manusa/setup-minikube@v2
         with:
-          minikube version: 'v1.25.0'
-          kubernetes version: 'v1.25.0'
-          github token: ${{ secrets.GITHUB_TOKEN }}
+          kubernetes-version: 'v1.25.0'
+          minikube-version: 'v1.25.0'
           driver: docker
 
       - name: Point Docker to Minikube
         run: |
           echo "Configuring Docker to use Minikube's daemon..."
-          eval $(minikube -p minikube docker-env)
+          eval $(minikube docker-env)
 
       - name: Build Docker images in Minikube
         run: |
