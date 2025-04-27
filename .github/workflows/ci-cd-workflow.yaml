@@ -20,6 +20,7 @@ jobs:
       - name: Set up Java 11
         uses: actions/setup-java@v3
         with:
+          distribution: 'temurin'
           java-version: '11'
 
       - name: Build & test backend
@@ -65,18 +66,20 @@ jobs:
 
       - name: Build Docker images in Minikube
         run: |
-          # Build backend image
-          docker build -t viatab-backend:latest ./backendV1
-          # Build frontend image
-          docker build -t viatab-frontend:latest ./my-react-app
+          # Tag and build backend image matching deployment manifest
+          docker build -t silamin00/via-tabloid-application-backend:latest ./backendV1
+          # Tag and build frontend image matching deployment manifest
+          docker build -t silamin00/via-tabloid-application-frontend:latest ./my-react-app
 
       - name: Deploy to Kubernetes
         run: |
-          # Apply manifests; ensure imagePullPolicy: Never in your k8s/deployment.yaml
+          # Apply PersistentVolumeClaim and all Deployments
           kubectl apply -f k8s/deployment.yaml
+          # Apply Services
           kubectl apply -f k8s/service.yaml
 
       - name: Verify rollout
         run: |
+          kubectl rollout status deployment/viatab-postgres
           kubectl rollout status deployment/viatab-backend
           kubectl rollout status deployment/viatab-frontend
