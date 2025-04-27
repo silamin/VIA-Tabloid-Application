@@ -60,7 +60,7 @@ jobs:
           version: 'latest'
 
       - name: Set up Minikube
-        uses: manusa/actions-setup-minikube@v2
+        uses: manusa/setup-minikube@v2
         with:
           kubernetes-version: '1.25.0'
           driver: docker
