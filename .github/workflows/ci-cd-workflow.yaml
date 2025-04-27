@@ -26,7 +26,6 @@ jobs:
       - name: Build & package backend
         working-directory: ./backendV1
         run: |
-          # Ensure Maven Wrapper is executable if present
           if [ -f mvnw ]; then
             chmod +x mvnw
             ./mvnw clean package -DskipTests
@@ -59,17 +58,16 @@ jobs:
         with:
           version: 'latest'
 
-      - name: Set up Minikube
-        uses: manusa/setup-minikube@v2
-        with:
-          kubernetes-version: 'v1.25.0'
-          minikube-version: 'v1.25.0'
-          driver: docker
+      - name: Install Minikube
+        run: |
+          curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 \
+            && chmod +x minikube \
+            && sudo mv minikube /usr/local/bin/
+          minikube start --driver=docker --kubernetes-version=v1.25.0
 
       - name: Point Docker to Minikube
         run: |
-          echo "Configuring Docker to use Minikube's daemon..."
-          eval $(minikube docker-env)
+          eval $(minikube -p minikube docker-env)
 
       - name: Build Docker images in Minikube
         run: |
