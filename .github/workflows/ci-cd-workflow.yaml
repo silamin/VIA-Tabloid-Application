@@ -9,9 +9,8 @@ on:
       - main
 
 jobs:
-  # Continuous Integration (CI)
-  build:
-    name: Build & Test
+  ci-cd:
+    name: CI, Build, and Deploy
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -44,15 +43,6 @@ jobs:
           npm ci
           npm run build
 
-  # Continuous Deployment (CD)
-  deploy:
-    name: Deploy to Minikube
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
       - name: Install kubectl
         uses: azure/setup-kubectl@v3
         with:
@@ -69,7 +59,7 @@ jobs:
         run: |
           eval $(minikube -p minikube docker-env)
 
-      - name: Build Docker images in Minikube
+      - name: Build Docker images
         run: |
           docker build -t silamin00/via-tabloid-application-backend:latest ./backendV1
           docker build -t silamin00/via-tabloid-application-frontend:latest ./my-react-app
